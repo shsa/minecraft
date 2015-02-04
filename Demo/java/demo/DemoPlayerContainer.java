@@ -31,8 +31,10 @@ public class DemoPlayerContainer extends Container
 		craftMatrix = new InventoryCrafting(this, 5, 5);
 		craftResult = new InventoryCraftResult();
 
+		int slotIndex = player.inventory.getSizeInventory() - 1;
+		
 		// Output
-		this.addSlotToContainer(new SlotCrafting(player, craftMatrix, craftResult, 0, 152, 26));
+		this.addSlotToContainer(new SlotCrafting(player, craftMatrix, craftResult, slotIndex--, 152, 26));
 
 		// Fuel
 		// this.addSlotToContainer(new Slot(tileEntity, 0, 112, 60));
@@ -42,14 +44,14 @@ public class DemoPlayerContainer extends Container
 		{
 			for (int column = 0; column < 3; column++)
 			{
-				this.addSlotToContainer(new Slot(craftMatrix, column + row * 3, 85 + column * 18, 8 + row * 18));
+				this.addSlotToContainer(new Slot(craftMatrix, slotIndex--, 85 + column * 18, 8 + row * 18));
 			}
 		}
 
 		for (int i = 0; i < 4; ++i)
 		{
 			final int k = i;
-			this.addSlotToContainer(new Slot(player.inventory, player.inventory.getSizeInventory() - 1 - i, 8, 8 + i * 18)
+			this.addSlotToContainer(new Slot(player.inventory, slotIndex--, 8, 8 + i * 18)
 			{
 				private static final String __OBFID = "CL_00001755";
 
@@ -90,13 +92,13 @@ public class DemoPlayerContainer extends Container
 		{
 			for (int j = 0; j < 9; ++j)
 			{
-				this.addSlotToContainer(new Slot(player.inventory, j + (i + 1) * 9, 8 + j * 18, 84 + i * 18));
+				this.addSlotToContainer(new Slot(player.inventory, slotIndex--, 8 + j * 18, 84 + i * 18));
 			}
 		}
 
 		for (int i = 0; i < 9; ++i)
 		{
-			this.addSlotToContainer(new Slot(player.inventory, i, 8 + i * 18, 142));
+			this.addSlotToContainer(new Slot(player.inventory, slotIndex--, 8 + i * 18, 142));
 		}
 
 		this.onCraftMatrixChanged(this.craftMatrix);
@@ -136,52 +138,52 @@ public class DemoPlayerContainer extends Container
 
 			if (index == 0)
 			{
-				if (!this.mergeItemStack(itemstack1, 9, 45, true))
+				if (!this.mergeItemStack(itemstack1, 14, 50, true))
 				{
 					return null;
 				}
 
 				slot.onSlotChange(itemstack1, itemstack);
 			}
-			else if (index >= 1 && index < 5)
+			else if (index >= 1 && index < 10)
 			{
-				if (!this.mergeItemStack(itemstack1, 9, 45, false))
+				if (!this.mergeItemStack(itemstack1, 14, 50, false))
 				{
 					return null;
 				}
 			}
-			else if (index >= 5 && index < 9)
+			else if (index >= 10 && index < 14)
 			{
-				if (!this.mergeItemStack(itemstack1, 9, 45, false))
+				if (!this.mergeItemStack(itemstack1, 14, 50, false))
 				{
 					return null;
 				}
 			}
 			else if (itemstack.getItem() instanceof ItemArmor
-					&& !((Slot) this.inventorySlots.get(5 + ((ItemArmor) itemstack.getItem()).armorType)).getHasStack())
+					&& !((Slot) this.inventorySlots.get(10 + ((ItemArmor) itemstack.getItem()).armorType)).getHasStack())
 			{
-				int j = 5 + ((ItemArmor) itemstack.getItem()).armorType;
+				int j = 10 + ((ItemArmor) itemstack.getItem()).armorType;
 
 				if (!this.mergeItemStack(itemstack1, j, j + 1, false))
 				{
 					return null;
 				}
 			}
-			else if (index >= 9 && index < 36)
+			else if (index >= 14 && index < 41)
 			{
-				if (!this.mergeItemStack(itemstack1, 36, 45, false))
+				if (!this.mergeItemStack(itemstack1, 41, 50, false))
 				{
 					return null;
 				}
 			}
-			else if (index >= 36 && index < 45)
+			else if (index >= 41 && index < 50)
 			{
-				if (!this.mergeItemStack(itemstack1, 9, 36, false))
+				if (!this.mergeItemStack(itemstack1, 14, 48, false))
 				{
 					return null;
 				}
 			}
-			else if (!this.mergeItemStack(itemstack1, 9, 45, false))
+			else if (!this.mergeItemStack(itemstack1, 14, 48, false))
 			{
 				return null;
 			}

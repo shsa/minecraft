@@ -21,9 +21,8 @@ import net.minecraft.util.ReportedException;
 
 public class DemoPlayerInventory extends InventoryPlayer
 {
-    public ItemStack[] craftInventory = new ItemStack[9];
-    /** An array of 9 item stacks containing the currently crafted result items. */
-    public ItemStack[] craftResult = new ItemStack[1];
+    /** An array of 9 item stacks containing the currently crafted result items. 3x3 + 1(result)*/
+    public ItemStack[] craftInventory = new ItemStack[10];
 
     public DemoPlayerInventory(EntityPlayer player)
     {
@@ -103,31 +102,45 @@ public class DemoPlayerInventory extends InventoryPlayer
                 armorInventory[i].getItem().onArmorTick(player.worldObj, player, armorInventory[i]);
             }
         }
+
+        for (int i = 0; i < craftInventory.length; i++)
+        {
+            if (craftInventory[i] != null)
+            {
+            	craftInventory[i].updateAnimation(this.player.worldObj, this.player, i, this.currentItem == i);
+            }
+        }
     }
 
     /**
      * When some containers are closed they call this on each slot, then drop whatever it returns as an EntityItem -
      * like when you close a workbench GUI.
      */
-    public ItemStack getStackInSlotOnClosing(int p_70304_1_)
+    public ItemStack getStackInSlotOnClosing(int slotIndex)
     {
         ItemStack[] aitemstack = this.mainInventory;
 
-        if (p_70304_1_ >= this.mainInventory.length)
+        if (slotIndex >= this.mainInventory.length)
         {
             aitemstack = this.armorInventory;
-            p_70304_1_ -= this.mainInventory.length;
+            slotIndex -= this.mainInventory.length;
+
+            if (slotIndex >= this.armorInventory.length)
+            {
+            	aitemstack = this.craftInventory;
+            	slotIndex -= this.craftInventory.length;
+            }
         }
 
-        if (aitemstack[p_70304_1_] != null)
+        if (aitemstack[slotIndex] != null)
         {
-            ItemStack itemstack = aitemstack[p_70304_1_];
-            aitemstack[p_70304_1_] = null;
+            ItemStack itemstack = aitemstack[slotIndex];
+            aitemstack[slotIndex] = null;
             return itemstack;
         }
         else
         {
-            return null;
+        	return null;
         }
     }
 
@@ -135,33 +148,39 @@ public class DemoPlayerInventory extends InventoryPlayer
      * Removes from an inventory slot (first arg) up to a specified number (second arg) of items and returns them in a
      * new stack.
      */
-    public ItemStack decrStackSize(int p_70298_1_, int p_70298_2_)
+    public ItemStack decrStackSize(int slotIndex, int count)
     {
         ItemStack[] aitemstack = this.mainInventory;
 
-        if (p_70298_1_ >= this.mainInventory.length)
+        if (slotIndex >= this.mainInventory.length)
         {
             aitemstack = this.armorInventory;
-            p_70298_1_ -= this.mainInventory.length;
+            slotIndex -= this.mainInventory.length;
+
+            if (slotIndex >= this.armorInventory.length)
+            {
+            	aitemstack = this.craftInventory;
+            	slotIndex -= this.craftInventory.length;
+            }
         }
 
-        if (aitemstack[p_70298_1_] != null)
+        if (aitemstack[slotIndex] != null)
         {
             ItemStack itemstack;
 
-            if (aitemstack[p_70298_1_].stackSize <= p_70298_2_)
+            if (aitemstack[slotIndex].stackSize <= count)
             {
-                itemstack = aitemstack[p_70298_1_];
-                aitemstack[p_70298_1_] = null;
+                itemstack = aitemstack[slotIndex];
+                aitemstack[slotIndex] = null;
                 return itemstack;
             }
             else
             {
-                itemstack = aitemstack[p_70298_1_].splitStack(p_70298_2_);
+                itemstack = aitemstack[slotIndex].splitStack(count);
 
-                if (aitemstack[p_70298_1_].stackSize == 0)
+                if (aitemstack[slotIndex].stackSize == 0)
                 {
-                    aitemstack[p_70298_1_] = null;
+                    aitemstack[slotIndex] = null;
                 }
 
                 return itemstack;
@@ -176,24 +195,30 @@ public class DemoPlayerInventory extends InventoryPlayer
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
      */
-    public void setInventorySlotContents(int p_70299_1_, ItemStack p_70299_2_)
+    public void setInventorySlotContents(int slotIndex, ItemStack itemStack)
     {
         ItemStack[] aitemstack = this.mainInventory;
 
-        if (p_70299_1_ >= aitemstack.length)
+        if (slotIndex >= aitemstack.length)
         {
-            p_70299_1_ -= aitemstack.length;
+            slotIndex -= aitemstack.length;
             aitemstack = this.armorInventory;
+
+            if (slotIndex >= this.armorInventory.length)
+            {
+            	aitemstack = this.craftInventory;
+            	slotIndex -= this.craftInventory.length;
+            }
         }
 
-        aitemstack[p_70299_1_] = p_70299_2_;
+        aitemstack[slotIndex] = itemStack;
     }
 
     /**
      * Writes the inventory out as a list of compound tags. This is where the slot indices are used (+100 for armor, +80
      * for crafting).
      */
-    public NBTTagList writeToNBT(NBTTagList p_70442_1_)
+    public NBTTagList writeToNBT(NBTTagList tag)
     {
         int i;
         NBTTagCompound nbttagcompound;
@@ -205,7 +230,7 @@ public class DemoPlayerInventory extends InventoryPlayer
                 nbttagcompound = new NBTTagCompound();
                 nbttagcompound.setByte("Slot", (byte)i);
                 this.mainInventory[i].writeToNBT(nbttagcompound);
-                p_70442_1_.appendTag(nbttagcompound);
+                tag.appendTag(nbttagcompound);
             }
         }
 
@@ -216,24 +241,35 @@ public class DemoPlayerInventory extends InventoryPlayer
                 nbttagcompound = new NBTTagCompound();
                 nbttagcompound.setByte("Slot", (byte)(i + 100));
                 this.armorInventory[i].writeToNBT(nbttagcompound);
-                p_70442_1_.appendTag(nbttagcompound);
+                tag.appendTag(nbttagcompound);
             }
         }
 
-        return p_70442_1_;
+        for (i = 0; i < this.craftInventory.length; ++i)
+        {
+            if (this.craftInventory[i] != null)
+            {
+                nbttagcompound = new NBTTagCompound();
+                nbttagcompound.setByte("Slot", (byte)(i + 200));
+                this.craftInventory[i].writeToNBT(nbttagcompound);
+                tag.appendTag(nbttagcompound);
+            }
+        }
+        
+        return tag;
     }
 
     /**
      * Reads from the given tag list and fills the slots in the inventory with the correct items.
      */
-    public void readFromNBT(NBTTagList p_70443_1_)
+    public void readFromNBT(NBTTagList tag)
     {
         this.mainInventory = new ItemStack[36];
         this.armorInventory = new ItemStack[4];
 
-        for (int i = 0; i < p_70443_1_.tagCount(); ++i)
+        for (int i = 0; i < tag.tagCount(); ++i)
         {
-            NBTTagCompound nbttagcompound = p_70443_1_.getCompoundTagAt(i);
+            NBTTagCompound nbttagcompound = tag.getCompoundTagAt(i);
             int j = nbttagcompound.getByte("Slot") & 255;
             ItemStack itemstack = ItemStack.loadItemStackFromNBT(nbttagcompound);
 
@@ -248,6 +284,11 @@ public class DemoPlayerInventory extends InventoryPlayer
                 {
                     this.armorInventory[j - 100] = itemstack;
                 }
+                
+                if (j >= 200 && j < (this.craftInventory.length + 100))
+                {
+                	this.craftInventory[j - 200] = itemstack;
+                }
             }
         }
     }
@@ -257,23 +298,29 @@ public class DemoPlayerInventory extends InventoryPlayer
      */
     public int getSizeInventory()
     {
-        return this.mainInventory.length + 4;
+        return this.mainInventory.length + 4 + this.craftInventory.length;
     }
 
     /**
      * Returns the stack in slot i
      */
-    public ItemStack getStackInSlot(int p_70301_1_)
+    public ItemStack getStackInSlot(int slotIndex)
     {
         ItemStack[] aitemstack = this.mainInventory;
 
-        if (p_70301_1_ >= aitemstack.length)
+        if (slotIndex >= aitemstack.length)
         {
-            p_70301_1_ -= aitemstack.length;
+            slotIndex -= aitemstack.length;
             aitemstack = this.armorInventory;
+
+            if (slotIndex >= this.armorInventory.length)
+            {
+            	aitemstack = this.craftInventory;
+            	slotIndex -= this.craftInventory.length;
+            }
         }
 
-        return aitemstack[p_70301_1_];
+        return aitemstack[slotIndex];
     }
 
     /**
@@ -300,29 +347,16 @@ public class DemoPlayerInventory extends InventoryPlayer
         return 64;
     }
 
-    public boolean func_146025_b(Block p_146025_1_)
-    {
-        if (p_146025_1_.getMaterial().isToolNotRequired())
-        {
-            return true;
-        }
-        else
-        {
-            ItemStack itemstack = this.getStackInSlot(this.currentItem);
-            return itemstack != null ? itemstack.func_150998_b(p_146025_1_) : false;
-        }
-    }
-
     /**
      * Returns true if the specified ItemStack exists in the inventory.
      */
-    public boolean hasItemStack(ItemStack p_70431_1_)
+    public boolean hasItemStack(ItemStack itemStack)
     {
         int i;
 
         for (i = 0; i < this.armorInventory.length; ++i)
         {
-            if (this.armorInventory[i] != null && this.armorInventory[i].isItemEqual(p_70431_1_))
+            if (this.armorInventory[i] != null && this.armorInventory[i].isItemEqual(itemStack))
             {
                 return true;
             }
@@ -330,7 +364,15 @@ public class DemoPlayerInventory extends InventoryPlayer
 
         for (i = 0; i < this.mainInventory.length; ++i)
         {
-            if (this.mainInventory[i] != null && this.mainInventory[i].isItemEqual(p_70431_1_))
+            if (this.mainInventory[i] != null && this.mainInventory[i].isItemEqual(itemStack))
+            {
+                return true;
+            }
+        }
+        
+        for (i = 0; i < this.craftInventory.length; ++i)
+        {
+            if (this.craftInventory[i] != null && this.craftInventory[i].isItemEqual(itemStack))
             {
                 return true;
             }
@@ -346,20 +388,20 @@ public class DemoPlayerInventory extends InventoryPlayer
     /**
      * Copy the ItemStack contents from another InventoryPlayer instance
      */
-    public void copyInventory(InventoryPlayer p_70455_1_)
+    public void copyInventory(InventoryPlayer inventory)
     {
         int i;
 
         for (i = 0; i < this.mainInventory.length; ++i)
         {
-            this.mainInventory[i] = ItemStack.copyItemStack(p_70455_1_.mainInventory[i]);
+            this.mainInventory[i] = ItemStack.copyItemStack(inventory.mainInventory[i]);
         }
 
         for (i = 0; i < this.armorInventory.length; ++i)
         {
-            this.armorInventory[i] = ItemStack.copyItemStack(p_70455_1_.armorInventory[i]);
+            this.armorInventory[i] = ItemStack.copyItemStack(inventory.armorInventory[i]);
         }
 
-        this.currentItem = p_70455_1_.currentItem;
+        this.currentItem = inventory.currentItem;
     }
 }
