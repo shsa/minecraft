@@ -35,8 +35,11 @@ public class Proxy
 	{
 		if (!(player.inventoryContainer instanceof DemoPlayerContainer))
 		{
-			player.inventory = new DemoPlayerInventory(player);
+			DemoPlayerInventory inventory = new DemoPlayerInventory(player);
+			//inventory.copyInventory(player.inventory);
+			player.inventory = inventory;
 			player.inventoryContainer = new DemoPlayerContainer(player);
+			player.openContainer = player.inventoryContainer; 
 		}
 	}
 	
@@ -52,7 +55,7 @@ public class Proxy
 	{
 		NetHandlerPlayServer handler = (NetHandlerPlayServer)event.handler;
 		EntityPlayer player = handler.playerEntity;
-		updatePlayer(player);
+		//updatePlayer(player);
 	}
 	
 	/*
