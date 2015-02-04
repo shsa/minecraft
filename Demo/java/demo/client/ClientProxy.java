@@ -33,7 +33,7 @@ public class ClientProxy extends Proxy
 				if (!(player.inventoryContainer instanceof DemoPlayerContainer))
 				{
 					player.inventory = new DemoPlayerInventory(player);
-					//player.inventoryContainer = new DemoPlayerContainer(player);
+					player.inventoryContainer = new DemoPlayerContainer(player);
 				}
 				event.gui = new DemoPlayerInventoryGui(player);
 			}
