@@ -22,32 +22,14 @@ public class Proxy
 	{
 	}
 	
-	/*
-	@SubscribeEvent
-	public void onPlayerLogged(PlayerEvent.PlayerLoggedInEvent event)
-	{
-		event.player.inventory = new DemoPlayerInventory(event.player);
-		event.player.inventoryContainer = new DemoPlayerContainer(event.player);
-	}
-	*/
-	
 	public void updatePlayer(EntityPlayer player)
 	{
 		if (!(player.inventoryContainer instanceof DemoPlayerContainer))
 		{
-			DemoPlayerInventory inventory = new DemoPlayerInventory(player);
-			//inventory.copyInventory(player.inventory);
-			player.inventory = inventory;
+			player.inventory = new DemoPlayerInventory(player);
 			player.inventoryContainer = new DemoPlayerContainer(player);
 			player.openContainer = player.inventoryContainer; 
 		}
-	}
-	
-	@SubscribeEvent
-	public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event)
-	{
-		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-		//updatePlayer(player);
 	}
 	
 	@SubscribeEvent
@@ -55,16 +37,6 @@ public class Proxy
 	{
 		NetHandlerPlayServer handler = (NetHandlerPlayServer)event.handler;
 		EntityPlayer player = handler.playerEntity;
-		//updatePlayer(player);
+		updatePlayer(player);
 	}
-	
-	/*
-	@SubscribeEvent
-	public void onPlayerLoading(PlayerEvent.LoadFromFile event)
-	{
-		//event.entityPlayer.inventory = new DemoPlayerInventory(event.entityPlayer);
-		//event.entityPlayer.inventoryContainer = new DemoPlayerContainer(event.entityPlayer);
-		//event.
-	}
-	*/
 }
