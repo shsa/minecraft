@@ -33,8 +33,11 @@ public class Proxy
 	
 	public void updatePlayer(EntityPlayer player)
 	{
-		player.inventory = new DemoPlayerInventory(player);
-		player.inventoryContainer = new DemoPlayerContainer(player);
+		if (!(player.inventoryContainer instanceof DemoPlayerContainer))
+		{
+			player.inventory = new DemoPlayerInventory(player);
+			player.inventoryContainer = new DemoPlayerContainer(player);
+		}
 	}
 	
 	@SubscribeEvent

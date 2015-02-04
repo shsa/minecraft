@@ -7,8 +7,10 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import demo.DemoPlayerInventory;
 import demo.Log;
 import demo.DemoPlayerContainer;
@@ -23,19 +25,28 @@ public class ClientProxy extends Proxy
 	}
 
 	@SubscribeEvent
+	public void onPlayerLogged(PlayerEvent.PlayerLoggedInEvent event)
+	{
+		Log.msg("ok");
+	}
+	
+	@SubscribeEvent
+	public void onEntityJoinWorld(EntityJoinWorldEvent event)
+	{
+		if (event.entity instanceof EntityClientPlayerMP)
+		{
+			updatePlayer((EntityPlayer) event.entity);
+		}
+	}
+	
+	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event)
 	{
 		try
 		{
 			if (event.gui instanceof GuiInventory)
 			{
-				EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
-				if (!(player.inventoryContainer instanceof DemoPlayerContainer))
-				{
-					player.inventory = new DemoPlayerInventory(player);
-					player.inventoryContainer = new DemoPlayerContainer(player);
-				}
-				event.gui = new DemoPlayerInventoryGui(player);
+				event.gui = new DemoPlayerInventoryGui(Minecraft.getMinecraft().thePlayer);
 			}
 			Log.msg("%s", event.gui.getClass().getName());
 		}
