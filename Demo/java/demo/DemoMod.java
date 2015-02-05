@@ -6,6 +6,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import demo.inventoryitem.InventoryItemMain;
 
 @Mod(name = "Demo", modid = DemoMod.MODID, version = DemoMod.VERSION)
 public class DemoMod
@@ -20,5 +21,7 @@ public class DemoMod
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		proxy.PreInit(event);
+		
+		InventoryItemMain.instance.PreInit(event);
 	}
 }
