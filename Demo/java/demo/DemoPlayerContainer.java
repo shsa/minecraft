@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 public class DemoPlayerContainer extends Container
 {
-	private final EntityPlayer thePlayer;
+	public final EntityPlayer thePlayer;
 	public InventoryCrafting craftMatrix;
 	public IInventory craftResult;
 
@@ -38,7 +38,7 @@ public class DemoPlayerContainer extends Container
 	{
 		this.thePlayer = player;
 		this.worldObj = player.worldObj;
-		craftMatrix = new InventoryCrafting(this, 3, 3);
+		this.craftMatrix = new DemoInventoryCrafting(this, 3, 3);
 		craftResult = new InventoryCraftResult();
 
 		int slotIndex = player.inventory.getSizeInventory() - 1;

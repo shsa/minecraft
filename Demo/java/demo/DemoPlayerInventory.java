@@ -22,7 +22,7 @@ import net.minecraft.util.ReportedException;
 public class DemoPlayerInventory extends InventoryPlayer
 {
     /** An array of 9 item stacks containing the currently crafted result items. 3x3 + 1(result)*/
-    public ItemStack[] craftInventory = new ItemStack[10];
+    public ItemStack[] craftInventory = new ItemStack[9];
 
     public DemoPlayerInventory(EntityPlayer player)
     {
@@ -285,7 +285,7 @@ public class DemoPlayerInventory extends InventoryPlayer
                     this.armorInventory[j - 100] = itemstack;
                 }
                 
-                if (j >= 200 && j < (this.craftInventory.length + 100))
+                if (j >= 200 && j < (this.craftInventory.length + 200))
                 {
                 	this.craftInventory[j - 200] = itemstack;
                 }
@@ -320,7 +320,6 @@ public class DemoPlayerInventory extends InventoryPlayer
             }
         }
 
-        
         return aitemstack[slotIndex];
     }
 
