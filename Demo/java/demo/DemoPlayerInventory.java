@@ -20,9 +20,10 @@ import net.minecraft.util.ReportedException;
 
 public class DemoPlayerInventory extends InventoryPlayer
 {
+	public ItemStack[] extraInventory = new ItemStack[4];
+	
 	/**
-	 * An array of 9 item stacks containing the currently crafted result items.
-	 * 3x3 + 1(result)
+	 * An array of 9 (3x3) item stacks containing the currently crafted result items.
 	 */
 	public ItemStack[] craftInventory = new ItemStack[9];
 
@@ -32,8 +33,7 @@ public class DemoPlayerInventory extends InventoryPlayer
 	}
 
 	/**
-	 * Clear this player's inventory (including armor), using the specified Item
-	 * and metadata as filters or -1 for no filter.
+	 * Clear this player's inventory (including armor), using the specified Item and metadata as filters or -1 for no filter.
 	 */
 	@Override
 	public int clearInventory(Item item, int meta)
@@ -64,6 +64,28 @@ public class DemoPlayerInventory extends InventoryPlayer
 			}
 		}
 
+		for (k = 0; k < this.extraInventory.length; ++k)
+		{
+			itemstack = this.extraInventory[k];
+
+			if (itemstack != null && (item == null || itemstack.getItem() == item) && (meta <= -1 || itemstack.getItemDamage() == meta))
+			{
+				j += itemstack.stackSize;
+				this.extraInventory[k] = null;
+			}
+		}
+		
+		for (k = 0; k < this.craftInventory.length; ++k)
+		{
+			itemstack = this.craftInventory[k];
+
+			if (itemstack != null && (item == null || itemstack.getItem() == item) && (meta <= -1 || itemstack.getItemDamage() == meta))
+			{
+				j += itemstack.stackSize;
+				this.craftInventory[k] = null;
+			}
+		}
+		
 		if (this.getItemStack() != null)
 		{
 			if (item != null && this.getItemStack().getItem() != item)
@@ -84,8 +106,7 @@ public class DemoPlayerInventory extends InventoryPlayer
 	}
 
 	/**
-	 * Decrement the number of animations remaining. Only called on client side.
-	 * This is used to handle the animation of receiving a block.
+	 * Decrement the number of animations remaining. Only called on client side. This is used to handle the animation of receiving a block.
 	 */
 	public void decrementAnimations()
 	{
@@ -105,6 +126,14 @@ public class DemoPlayerInventory extends InventoryPlayer
 			}
 		}
 
+		for (int i = 0; i < extraInventory.length; i++)
+		{
+			if (extraInventory[i] != null)
+			{
+				extraInventory[i].updateAnimation(this.player.worldObj, this.player, i, this.currentItem == i);
+			}
+		}
+
 		for (int i = 0; i < craftInventory.length; i++)
 		{
 			if (craftInventory[i] != null)
@@ -114,26 +143,38 @@ public class DemoPlayerInventory extends InventoryPlayer
 		}
 	}
 
-	/**
-	 * When some containers are closed they call this on each slot, then drop
-	 * whatever it returns as an EntityItem - like when you close a workbench
-	 * GUI.
-	 */
-	public ItemStack getStackInSlotOnClosing(int slotIndex)
+	
+	private ItemStack[] curStackList;
+	private int getStackItem(int slotIndex)
 	{
-		ItemStack[] aitemstack = this.mainInventory;
-
+		this.curStackList = this.mainInventory;
 		if (slotIndex >= this.mainInventory.length)
 		{
-			aitemstack = this.armorInventory;
+			this.curStackList = this.armorInventory;
 			slotIndex -= this.mainInventory.length;
 
 			if (slotIndex >= this.armorInventory.length)
 			{
-				slotIndex -= aitemstack.length;
-				aitemstack = this.craftInventory;
+				this.curStackList = this.extraInventory;
+				slotIndex -= this.armorInventory.length;
+
+				if (slotIndex >= this.extraInventory.length)
+				{
+					this.curStackList = this.craftInventory;
+					slotIndex -= extraInventory.length;
+				}
 			}
 		}
+		return slotIndex;
+	}
+	
+	/**
+	 * When some containers are closed they call this on each slot, then drop whatever it returns as an EntityItem - like when you close a workbench GUI.
+	 */
+	public ItemStack getStackInSlotOnClosing(int slotIndex)
+	{
+		slotIndex = getStackItem(slotIndex);
+		ItemStack[] aitemstack = this.curStackList;
 
 		if (aitemstack[slotIndex] != null)
 		{
@@ -148,24 +189,12 @@ public class DemoPlayerInventory extends InventoryPlayer
 	}
 
 	/**
-	 * Removes from an inventory slot (first arg) up to a specified number
-	 * (second arg) of items and returns them in a new stack.
+	 * Removes from an inventory slot (first arg) up to a specified number (second arg) of items and returns them in a new stack.
 	 */
 	public ItemStack decrStackSize(int slotIndex, int count)
 	{
-		ItemStack[] aitemstack = this.mainInventory;
-
-		if (slotIndex >= this.mainInventory.length)
-		{
-			aitemstack = this.armorInventory;
-			slotIndex -= this.mainInventory.length;
-
-			if (slotIndex >= this.armorInventory.length)
-			{
-				slotIndex -= aitemstack.length;
-				aitemstack = this.craftInventory;
-			}
-		}
+		slotIndex = getStackItem(slotIndex);
+		ItemStack[] aitemstack = this.curStackList;
 
 		if (aitemstack[slotIndex] != null)
 		{
@@ -196,31 +225,18 @@ public class DemoPlayerInventory extends InventoryPlayer
 	}
 
 	/**
-	 * Sets the given item stack to the specified slot in the inventory (can be
-	 * crafting or armor sections).
+	 * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
 	 */
 	public void setInventorySlotContents(int slotIndex, ItemStack itemStack)
 	{
-		ItemStack[] aitemstack = this.mainInventory;
-
-		if (slotIndex >= aitemstack.length)
-		{
-			slotIndex -= aitemstack.length;
-			aitemstack = this.armorInventory;
-
-			if (slotIndex >= this.armorInventory.length)
-			{
-				slotIndex -= aitemstack.length;
-				aitemstack = this.craftInventory;
-			}
-		}
+		slotIndex = getStackItem(slotIndex);
+		ItemStack[] aitemstack = this.curStackList;
 
 		aitemstack[slotIndex] = itemStack;
 	}
 
 	/**
-	 * Writes the inventory out as a list of compound tags. This is where the
-	 * slot indices are used (+100 for armor, +80 for crafting).
+	 * Writes the inventory out as a list of compound tags. This is where the slot indices are used (+100 for armor, +80 for crafting).
 	 */
 	public NBTTagList writeToNBT(NBTTagList tag)
 	{
@@ -249,12 +265,23 @@ public class DemoPlayerInventory extends InventoryPlayer
 			}
 		}
 
+		for (i = 0; i < this.extraInventory.length; ++i)
+		{
+			if (this.extraInventory[i] != null)
+			{
+				nbttagcompound = new NBTTagCompound();
+				nbttagcompound.setByte("Slot", (byte) (i + 200));
+				this.extraInventory[i].writeToNBT(nbttagcompound);
+				tag.appendTag(nbttagcompound);
+			}
+		}
+
 		for (i = 0; i < this.craftInventory.length; ++i)
 		{
 			if (this.craftInventory[i] != null)
 			{
 				nbttagcompound = new NBTTagCompound();
-				nbttagcompound.setByte("Slot", (byte) (i + 200));
+				nbttagcompound.setByte("Slot", (byte) (i + 250));
 				this.craftInventory[i].writeToNBT(nbttagcompound);
 				tag.appendTag(nbttagcompound);
 			}
@@ -264,8 +291,7 @@ public class DemoPlayerInventory extends InventoryPlayer
 	}
 
 	/**
-	 * Reads from the given tag list and fills the slots in the inventory with
-	 * the correct items.
+	 * Reads from the given tag list and fills the slots in the inventory with the correct items.
 	 */
 	public void readFromNBT(NBTTagList tag)
 	{
@@ -290,9 +316,14 @@ public class DemoPlayerInventory extends InventoryPlayer
 					this.armorInventory[j - 100] = itemstack;
 				}
 
-				if (j >= 200 && j < (this.craftInventory.length + 200))
+				if (j >= 200 && j < (this.extraInventory.length + 200))
 				{
-					this.craftInventory[j - 200] = itemstack;
+					this.extraInventory[j - 200] = itemstack;
+				}
+
+				if (j >= 250 && j < (this.craftInventory.length + 250))
+				{
+					this.craftInventory[j - 250] = itemstack;
 				}
 			}
 		}
@@ -303,7 +334,7 @@ public class DemoPlayerInventory extends InventoryPlayer
 	 */
 	public int getSizeInventory()
 	{
-		return this.mainInventory.length + 4 + this.craftInventory.length;
+		return this.mainInventory.length + 4 + this.extraInventory.length + this.craftInventory.length;
 	}
 
 	/**
@@ -311,19 +342,8 @@ public class DemoPlayerInventory extends InventoryPlayer
 	 */
 	public ItemStack getStackInSlot(int slotIndex)
 	{
-		ItemStack[] aitemstack = this.mainInventory;
-		int a = 1;
-		if (slotIndex >= aitemstack.length)
-		{
-			slotIndex -= aitemstack.length;
-			aitemstack = this.armorInventory;
-
-			if (slotIndex >= this.armorInventory.length)
-			{
-				slotIndex -= aitemstack.length;
-				aitemstack = this.craftInventory;
-			}
-		}
+		slotIndex = getStackItem(slotIndex);
+		ItemStack[] aitemstack = this.curStackList;
 
 		return aitemstack[slotIndex];
 	}
@@ -370,6 +390,14 @@ public class DemoPlayerInventory extends InventoryPlayer
 		for (i = 0; i < this.mainInventory.length; ++i)
 		{
 			if (this.mainInventory[i] != null && this.mainInventory[i].isItemEqual(itemStack))
+			{
+				return true;
+			}
+		}
+
+		for (i = 0; i < this.extraInventory.length; ++i)
+		{
+			if (this.extraInventory[i] != null && this.extraInventory[i].isItemEqual(itemStack))
 			{
 				return true;
 			}

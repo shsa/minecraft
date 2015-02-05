@@ -25,6 +25,12 @@ public class DemoPlayerContainer extends Container
 	public InventoryCrafting craftMatrix;
 	public IInventory craftResult;
 
+	private int craftIndex1 = Integer.MAX_VALUE;
+	private int craftIndex2 = Integer.MIN_VALUE;
+	private int extraIndex1 = Integer.MAX_VALUE;
+	private int extraIndex2 = Integer.MIN_VALUE;
+	private int armorIndex1;
+	private int armorIndex2;
 	private int inventoryIndex1 = Integer.MAX_VALUE;
 	private int inventoryIndex2 = Integer.MIN_VALUE;
 	private int barIndex1 = Integer.MAX_VALUE;
@@ -44,22 +50,32 @@ public class DemoPlayerContainer extends Container
 		int slotIndex = player.inventory.getSizeInventory() - 1;
 		
 		// Output
-		this.addSlotToContainer(new DemoSlotCrafting(player, this, 0, 152, 26));
-		slotIndex--;
+		this.addSlotToContainer(new DemoSlotCrafting(player, this, 0, 152, 62));
+		//slotIndex--;
 
 		// Fuel
 		// this.addSlotToContainer(new Slot(tileEntity, 0, 112, 60));
 
 		// Crafting input
+		craftIndex1 = this.inventorySlots.size();
 		for (int row = 0; row < 3; row++)
 		{
 			for (int col = 0; col < 3; col++)
 			{
-				this.addSlotToContainer(new Slot(craftMatrix, row * 3 + col, 85 + col * 18, 8 + row * 18));
+				this.addSlotToContainer(new Slot(craftMatrix, row * 3 + col, 116 + col * 18, 8 + row * 18));
 				slotIndex--;
 			}
 		}
+		craftIndex2 = this.inventorySlots.size() - 1;
 
+		extraIndex1 = this.inventorySlots.size();
+		for (int i = 0; i < 4; ++i)
+		{
+			this.addSlotToContainer(new Slot(player.inventory, slotIndex--, 80, 8 + i * 18));
+		}
+		extraIndex2 = this.inventorySlots.size() - 1;
+		
+		armorIndex1 = this.inventorySlots.size();
 		for (int i = 0; i < 4; ++i)
 		{
 			final int k = i;
@@ -99,6 +115,7 @@ public class DemoPlayerContainer extends Container
 				}
 			});
 		}
+		armorIndex2 = this.inventorySlots.size() - 1;
 
 		inventoryIndex1 = this.inventorySlots.size();
 		index1 = inventoryIndex1;
@@ -139,7 +156,7 @@ public class DemoPlayerContainer extends Container
 					{
 						slot.decrStackSize(1);
 						itemStack1.stackSize += 1;
-						return;
+						break;
 					}
 				}
 			}
@@ -180,52 +197,59 @@ public class DemoPlayerContainer extends Container
 
 			if (index == 0)
 			{
-				if (!this.mergeItemStack(itemstack1, 14, 50, true))
+				if (!this.mergeItemStack(itemstack1, index1, index2, true))
 				{
 					return null;
 				}
 
 				slot.onSlotChange(itemstack1, itemstack);
 			}
-			else if (index >= 1 && index < 10)
+			else if (index >= craftIndex1 && index <= craftIndex2)
 			{
-				if (!this.mergeItemStack(itemstack1, 14, 50, false))
+				if (!this.mergeItemStack(itemstack1, index1, index2, false))
 				{
 					return null;
 				}
 			}
-			else if (index >= 10 && index < 14)
+			else if (index >= extraIndex1 && index <= extraIndex2)
 			{
-				if (!this.mergeItemStack(itemstack1, 14, 50, false))
+				if (!this.mergeItemStack(itemstack1, index1, index2, false))
+				{
+					return null;
+				}
+			}
+			else if (index >= armorIndex1 && index <= armorIndex2)
+			{
+				if (!this.mergeItemStack(itemstack1, index1, index2, false))
 				{
 					return null;
 				}
 			}
 			else if (itemstack.getItem() instanceof ItemArmor
-					&& !((Slot) this.inventorySlots.get(10 + ((ItemArmor) itemstack.getItem()).armorType)).getHasStack())
+					&& !((Slot) this.inventorySlots.get(armorIndex1 + ((ItemArmor) itemstack.getItem()).armorType)).getHasStack())
 			{
-				int j = 10 + ((ItemArmor) itemstack.getItem()).armorType;
+				int j = armorIndex1 + ((ItemArmor) itemstack.getItem()).armorType;
 
 				if (!this.mergeItemStack(itemstack1, j, j + 1, false))
 				{
 					return null;
 				}
 			}
-			else if (index >= 14 && index < 41)
+			else if (index >= inventoryIndex1 && index <= inventoryIndex2)
 			{
-				if (!this.mergeItemStack(itemstack1, 41, 50, false))
+				if (!this.mergeItemStack(itemstack1, barIndex1, barIndex2, false))
 				{
 					return null;
 				}
 			}
-			else if (index >= 41 && index < 50)
+			else if (index >= barIndex1 && index <= barIndex2)
 			{
-				if (!this.mergeItemStack(itemstack1, 14, 48, false))
+				if (!this.mergeItemStack(itemstack1, inventoryIndex1, inventoryIndex2, false))
 				{
 					return null;
 				}
 			}
-			else if (!this.mergeItemStack(itemstack1, 14, 48, false))
+			else if (!this.mergeItemStack(itemstack1, index1, index2, false))
 			{
 				return null;
 			}
