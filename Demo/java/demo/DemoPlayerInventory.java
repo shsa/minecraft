@@ -127,8 +127,8 @@ public class DemoPlayerInventory extends InventoryPlayer
 
             if (slotIndex >= this.armorInventory.length)
             {
+            	slotIndex -= aitemstack.length;
             	aitemstack = this.craftInventory;
-            	slotIndex -= this.craftInventory.length;
             }
         }
 
@@ -159,8 +159,8 @@ public class DemoPlayerInventory extends InventoryPlayer
 
             if (slotIndex >= this.armorInventory.length)
             {
+            	slotIndex -= aitemstack.length;
             	aitemstack = this.craftInventory;
-            	slotIndex -= this.craftInventory.length;
             }
         }
 
@@ -206,8 +206,8 @@ public class DemoPlayerInventory extends InventoryPlayer
 
             if (slotIndex >= this.armorInventory.length)
             {
+            	slotIndex -= aitemstack.length;
             	aitemstack = this.craftInventory;
-            	slotIndex -= this.craftInventory.length;
             }
         }
 
@@ -307,7 +307,7 @@ public class DemoPlayerInventory extends InventoryPlayer
     public ItemStack getStackInSlot(int slotIndex)
     {
         ItemStack[] aitemstack = this.mainInventory;
-
+        int a = 1;
         if (slotIndex >= aitemstack.length)
         {
             slotIndex -= aitemstack.length;
@@ -315,11 +315,12 @@ public class DemoPlayerInventory extends InventoryPlayer
 
             if (slotIndex >= this.armorInventory.length)
             {
+            	slotIndex -= aitemstack.length;
             	aitemstack = this.craftInventory;
-            	slotIndex -= this.craftInventory.length;
             }
         }
 
+        
         return aitemstack[slotIndex];
     }
 

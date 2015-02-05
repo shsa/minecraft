@@ -1,5 +1,8 @@
 package demo;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,19 +25,27 @@ public class DemoPlayerContainer extends Container
 	public InventoryCrafting craftMatrix;
 	public IInventory craftResult;
 
+	private int inventoryIndex1 = Integer.MAX_VALUE;
+	private int inventoryIndex2 = Integer.MIN_VALUE;
+	private int barIndex1 = Integer.MAX_VALUE;
+	private int barIndex2 = Integer.MIN_VALUE;
+	private int index1 = Integer.MAX_VALUE;
+	private int index2 = Integer.MIN_VALUE;
+	
 	private World worldObj;
 
 	public DemoPlayerContainer(EntityPlayer player)
 	{
 		this.thePlayer = player;
 		this.worldObj = player.worldObj;
-		craftMatrix = new InventoryCrafting(this, 5, 5);
+		craftMatrix = new InventoryCrafting(this, 3, 3);
 		craftResult = new InventoryCraftResult();
 
 		int slotIndex = player.inventory.getSizeInventory() - 1;
 		
 		// Output
-		this.addSlotToContainer(new SlotCrafting(player, craftMatrix, craftResult, slotIndex--, 152, 26));
+		this.addSlotToContainer(new DemoSlotCrafting(player, this, 0, 152, 26));
+		slotIndex--;
 
 		// Fuel
 		// this.addSlotToContainer(new Slot(tileEntity, 0, 112, 60));
@@ -42,9 +53,10 @@ public class DemoPlayerContainer extends Container
 		// Crafting input
 		for (int row = 0; row < 3; row++)
 		{
-			for (int column = 0; column < 3; column++)
+			for (int col = 0; col < 3; col++)
 			{
-				this.addSlotToContainer(new Slot(craftMatrix, slotIndex--, 85 + column * 18, 8 + row * 18));
+				this.addSlotToContainer(new Slot(craftMatrix, row * 3 + col, 85 + col * 18, 8 + row * 18));
+				slotIndex--;
 			}
 		}
 
@@ -88,20 +100,50 @@ public class DemoPlayerContainer extends Container
 			});
 		}
 
-		for (int i = 0; i < 3; ++i)
+		inventoryIndex1 = this.inventorySlots.size();
+		index1 = inventoryIndex1;
+		for (int row = 0; row < 3; ++row)
 		{
-			for (int j = 0; j < 9; ++j)
+			for (int col = 0; col < 9; ++col)
 			{
-				this.addSlotToContainer(new Slot(player.inventory, slotIndex--, 8 + j * 18, 84 + i * 18));
+				int index = (row + 1) * 9 + col;
+				this.addSlotToContainer(new Slot(player.inventory, index, 8 + col * 18, 84 + row * 18));
 			}
 		}
+		inventoryIndex2 = this.inventorySlots.size() - 1;
 
-		for (int i = 0; i < 9; ++i)
+		barIndex1 = this.inventorySlots.size();
+		for (int col = 0; col < 9; ++col)
 		{
-			this.addSlotToContainer(new Slot(player.inventory, slotIndex--, 8 + i * 18, 142));
+			this.addSlotToContainer(new Slot(player.inventory, col, 8 + col * 18, 142));
 		}
+		barIndex2 = this.inventorySlots.size() - 1;
+		index2 = this.inventorySlots.size() - 1;
 
 		this.onCraftMatrixChanged(this.craftMatrix);
+	}
+
+	
+	public void onCrafting(ItemStack itemStack)	
+	{
+		for (int i = 0; i < this.craftMatrix.getSizeInventory(); i++)
+		{
+			ItemStack itemStack1 = this.craftMatrix.getStackInSlot(i);
+			if (itemStack1 != null && (itemStack1.stackSize - 1) <= 0)
+			{
+				for (int j = index1; j <= index2; j++)
+				{
+					Slot slot = (Slot) this.inventorySlots.get(j);
+					ItemStack itemStack2 = slot.getStack();
+					if (itemStack2 != null && itemStack1.isItemEqual(itemStack2))
+					{
+						slot.decrStackSize(1);
+						itemStack1.stackSize += 1;
+						return;
+					}
+				}
+			}
+		}
 	}
 
 	public void onCraftMatrixChanged(IInventory iinventory)
