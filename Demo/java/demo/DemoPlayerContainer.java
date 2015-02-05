@@ -5,6 +5,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -16,6 +17,7 @@ import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.network.play.client.C0EPacketClickWindow;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
@@ -180,6 +182,15 @@ public class DemoPlayerContainer extends Container
 		return true;
 	}
 
+	@SideOnly(Side.CLIENT)
+	public void clearCraftTable()
+	{
+		for (int i = craftIndex1; i <= craftIndex2; i++)
+		{
+			Minecraft.getMinecraft().playerController.windowClick(this.windowId, i, 0, 1, this.thePlayer);
+		}
+	}
+	
 	/**
 	 * Called when a player shift-clicks on a slot. You must override this or
 	 * you will crash when someone does that.
