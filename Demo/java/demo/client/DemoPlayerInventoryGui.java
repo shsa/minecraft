@@ -12,18 +12,24 @@ public class DemoPlayerInventoryGui extends GuiInventory
 {
 	protected static final ResourceLocation texture = new ResourceLocation(DemoMod.MODID, "textures/gui/container/inventory.png");
 
-	/** x size of the inventory window in pixels. Defined as  float, passed as int */
+	/**
+	 * x size of the inventory window in pixels. Defined as float, passed as int
+	 */
 	private float xSizeFloat;
-	/** y size of the inventory window in pixels. Defined as  float, passed as int. */
+	/**
+	 * y size of the inventory window in pixels. Defined as float, passed as
+	 * int.
+	 */
 	private float ySizeFloat;
 
-	public DemoPlayerInventoryGui(EntityPlayer player) 
+	public DemoPlayerInventoryGui(EntityPlayer player)
 	{
 		super(player);
 	}
 
 	/**
-	 * Draw the foreground layer for the GuiContainer (everything in front of the items)
+	 * Draw the foreground layer for the GuiContainer (everything in front of
+	 * the items)
 	 */
 	@Override
 	protected void drawGuiContainerForegroundLayer(int x, int y)
@@ -38,8 +44,8 @@ public class DemoPlayerInventoryGui extends GuiInventory
 	public void drawScreen(int x, int y, float z)
 	{
 		super.drawScreen(x, y, z);
-		this.xSizeFloat = (float)x;
-		this.ySizeFloat = (float)y;
+		this.xSizeFloat = (float) x;
+		this.ySizeFloat = (float) y;
 	}
 
 	@Override
@@ -50,7 +56,7 @@ public class DemoPlayerInventoryGui extends GuiInventory
 		int k = this.guiLeft;
 		int l = this.guiTop;
 		this.drawTexturedModalRect(k, l, 0, 0, this.xSize, this.ySize);
-		func_147046_a(k + 51, l + 75, 30, (float)(k + 51) - this.xSizeFloat, (float)(l + 75 - 50) - this.ySizeFloat, this.mc.thePlayer);
+		func_147046_a(k + 51, l + 75, 30, (float) (k + 51) - this.xSizeFloat, (float) (l + 75 - 50) - this.ySizeFloat, this.mc.thePlayer);
 	}
 
 }

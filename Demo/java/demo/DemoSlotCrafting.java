@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 public class DemoSlotCrafting extends SlotCrafting
 {
 	public DemoPlayerContainer container;
-	
+
 	public DemoSlotCrafting(EntityPlayer player, DemoPlayerContainer container, int stackIndex, int x, int y)
 	{
 		super(player, container.craftMatrix, container.craftResult, stackIndex, x, y);
