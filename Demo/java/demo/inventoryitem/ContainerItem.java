@@ -25,6 +25,7 @@ public class ContainerItem extends Container
 
 	public ContainerItem(EntityPlayer par1Player, InventoryPlayer inventoryPlayer, InventoryItem inventoryItem)
 	{
+		this.windowId = InventoryItemMain.GUI_ITEM_INV;
 		this.inventory = inventoryItem;
 
 		int i;

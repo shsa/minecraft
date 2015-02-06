@@ -35,7 +35,7 @@ public class ClientProxy extends Proxy
 	{
 		if (event.entity instanceof EntityClientPlayerMP)
 		{
-			updatePlayer((EntityPlayer) event.entity);
+			//updatePlayer((EntityPlayer) event.entity);
 		}
 	}
 	
@@ -44,9 +44,9 @@ public class ClientProxy extends Proxy
 	{
 		try
 		{
-			if (event.gui instanceof GuiInventory)
+			if (event.gui instanceof GuiInventory && !Minecraft.getMinecraft().playerController.isInCreativeMode())
 			{
-				event.gui = new DemoPlayerInventoryGui(Minecraft.getMinecraft().thePlayer);
+				//event.gui = new DemoPlayerInventoryGui(Minecraft.getMinecraft().thePlayer);
 			}
 			Log.msg("%s", event.gui.getClass().getName());
 		}

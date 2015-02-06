@@ -1,6 +1,10 @@
 package demo.inventoryitem;
 
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import demo.DemoMod;
 import demo.Proxy;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -10,7 +14,7 @@ public final class InventoryItemMain extends Proxy
 {
 	public static InventoryItemMain instance = new InventoryItemMain();
 
-	/** This is used to keep track of GUIs that we make*/
+	/** This is used to keep track of GUIs that we make */
 	private static int modGuiIndex = 0;
 
 	/** This is the starting index for all of our mod's item IDs */
@@ -23,12 +27,14 @@ public final class InventoryItemMain extends Proxy
 	public static final Item itemstore = new ItemStore().setUnlocalizedName("item_store").setCreativeTab(CreativeTabs.tabMisc);
 
 	@Override
-	public void PreInit(FMLPreInitializationEvent event)
+	public void preInit(FMLPreInitializationEvent event)
 	{
-        Item.itemRegistry.addObject(modItemIndex, "itemStore", (new ItemStore()).setUnlocalizedName("test").setTextureName("diamond").setCreativeTab(CreativeTabs.tabMisc));
-		// no renderers or entities to register, but whatever
-		//proxy.registerRenderers();
-		// register CommonProxy as our GuiHandler
-		//NetworkRegistry.instance().registerGuiHandler(this, new CommonProxy());
+	}
+
+	@Override
+	public void init(FMLInitializationEvent event)
+	{
+		Item.itemRegistry.addObject(modItemIndex, "itemStore", (new ItemStore()).setUnlocalizedName("test").setTextureName("diamond").setCreativeTab(CreativeTabs.tabMisc));
+		NetworkRegistry.INSTANCE.registerGuiHandler(DemoMod.instance, new GuiHandler());
 	}
 }

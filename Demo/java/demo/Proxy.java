@@ -6,6 +6,8 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
@@ -18,10 +20,18 @@ public class Proxy
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
-	public void PreInit(FMLPreInitializationEvent event)
+	public void preInit(FMLPreInitializationEvent event)
 	{
 	}
 	
+	public void init(FMLInitializationEvent event)
+	{
+	}
+	
+	public void postInit(FMLPostInitializationEvent event)
+	{
+	}
+
 	public void updatePlayer(EntityPlayer player)
 	{
 		if (!(player.inventoryContainer instanceof DemoPlayerContainer))
@@ -37,6 +47,6 @@ public class Proxy
 	{
 		NetHandlerPlayServer handler = (NetHandlerPlayServer)event.handler;
 		EntityPlayer player = handler.playerEntity;
-		updatePlayer(player);
+		//updatePlayer(player);
 	}
 }

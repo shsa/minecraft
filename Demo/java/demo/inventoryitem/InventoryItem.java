@@ -1,5 +1,7 @@
 package demo.inventoryitem;
 
+import java.util.UUID;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -9,6 +11,8 @@ import net.minecraftforge.common.util.Constants;
 
 public class InventoryItem implements IInventory
 {
+	protected String uniqueID;
+	
 	private String name = "Inventory Item";
 	
 	/** Provides NBT Tag Compound to reference */
@@ -25,11 +29,13 @@ public class InventoryItem implements IInventory
 	 */
 	public InventoryItem(ItemStack stack)
 	{
+		uniqueID = "";
 		invItem = stack;
 
 		// Create a new NBT Tag Compound if one doesn't already exist, or you will crash
 		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
+			uniqueID = UUID.randomUUID().toString();
 		}
 		// note that it's okay to use stack instead of invItem right there
 		// both reference the same memory location, so whatever you change using
@@ -160,10 +166,21 @@ public class InventoryItem implements IInventory
 	/**
 	 * A custom method to read our inventory from an ItemStack's NBT compound
 	 */
-	public void readFromNBT(NBTTagCompound compound)
+	public void readFromNBT(NBTTagCompound tagcompound)
 	{
+		if ("".equals(this.uniqueID))
+		{
+			// try to read unique ID from NBT
+			this.uniqueID = tagcompound.getString("uniqueID");
+			// if it's still "", assign a new one:
+			if ("".equals(this.uniqueID))
+			{
+				this.uniqueID = UUID.randomUUID().toString();
+			}
+		}
+
 		// Gets the custom taglist we wrote to this compound, if any
-		NBTTagList items = compound.getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
+		NBTTagList items = tagcompound.getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
 
 		for (int i = 0; i < items.tagCount(); ++i)
 		{
@@ -182,6 +199,8 @@ public class InventoryItem implements IInventory
 	 */
 	public void writeToNBT(NBTTagCompound tagcompound)
 	{
+		tagcompound.setString("uniqueID", this.uniqueID);
+		
 		// Create a new NBT Tag List to store itemstacks as NBT Tags
 		NBTTagList items = new NBTTagList();
 
