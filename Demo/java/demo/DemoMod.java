@@ -10,6 +10,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import demo.inventoryitem.GuiHandler;
 import demo.inventoryitem.InventoryItemMain;
 
 @Mod(name = "Demo", modid = DemoMod.MODID, version = DemoMod.VERSION)

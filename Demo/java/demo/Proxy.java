@@ -47,6 +47,6 @@ public class Proxy
 	{
 		NetHandlerPlayServer handler = (NetHandlerPlayServer)event.handler;
 		EntityPlayer player = handler.playerEntity;
-		//updatePlayer(player);
+		updatePlayer(player);
 	}
 }

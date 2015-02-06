@@ -281,7 +281,7 @@ public class DemoPlayerInventory extends InventoryPlayer
 			if (this.craftInventory[i] != null)
 			{
 				nbttagcompound = new NBTTagCompound();
-				nbttagcompound.setByte("Slot", (byte) (i + 250));
+				nbttagcompound.setByte("Slot", (byte) (i + 240));
 				this.craftInventory[i].writeToNBT(nbttagcompound);
 				tag.appendTag(nbttagcompound);
 			}
@@ -321,9 +321,9 @@ public class DemoPlayerInventory extends InventoryPlayer
 					this.extraInventory[j - 200] = itemstack;
 				}
 
-				if (j >= 250 && j < (this.craftInventory.length + 250))
+				if (j >= 240 && j < (this.craftInventory.length + 240))
 				{
-					this.craftInventory[j - 250] = itemstack;
+					this.craftInventory[j - 240] = itemstack;
 				}
 			}
 		}

@@ -16,6 +16,7 @@ import demo.Log;
 import demo.DemoPlayerContainer;
 import demo.Proxy;
 import demo.DemoMod;
+import demo.inventoryitem.InventoryItemMain;
 
 public class ClientProxy extends Proxy
 {
@@ -35,7 +36,7 @@ public class ClientProxy extends Proxy
 	{
 		if (event.entity instanceof EntityClientPlayerMP)
 		{
-			//updatePlayer((EntityPlayer) event.entity);
+			updatePlayer((EntityPlayer) event.entity);
 		}
 	}
 	
@@ -46,7 +47,12 @@ public class ClientProxy extends Proxy
 		{
 			if (event.gui instanceof GuiInventory && !Minecraft.getMinecraft().playerController.isInCreativeMode())
 			{
+				if (event.gui instanceof DemoPlayerInventoryGui)
+					return;
 				//event.gui = new DemoPlayerInventoryGui(Minecraft.getMinecraft().thePlayer);
+				event.setCanceled(true);
+				EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+				player.openGui(DemoMod.instance, 100, player.worldObj, (int) player.posX, (int) player.posY, (int) player.posZ);
 			}
 			Log.msg("%s", event.gui.getClass().getName());
 		}
