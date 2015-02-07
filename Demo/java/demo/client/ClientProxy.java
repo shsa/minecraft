@@ -9,6 +9,7 @@ import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import demo.DemoPlayerInventory;
@@ -23,6 +24,7 @@ public class ClientProxy extends Proxy
 	public ClientProxy()
 	{
 		super();
+		MinecraftForge.EVENT_BUS.register(new PlayerTracking());
 	}
 
 	@SubscribeEvent
@@ -60,5 +62,13 @@ public class ClientProxy extends Proxy
 		{
 
 		}
+	}
+	
+	@SubscribeEvent
+	public void onRenderGameOverlayEvent(RenderGameOverlayEvent.Post event)
+	{
+		Overlay overlay = new Overlay(Minecraft.getMinecraft());
+		overlay.onRenderExperienceBar(event);
+		//Log.msg("%s", event.type.toString());
 	}
 }
