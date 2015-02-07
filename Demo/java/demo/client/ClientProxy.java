@@ -21,10 +21,12 @@ import demo.inventoryitem.InventoryItemMain;
 
 public class ClientProxy extends Proxy
 {
+	private Overlay overlay; 
+	
 	public ClientProxy()
 	{
 		super();
-		MinecraftForge.EVENT_BUS.register(new PlayerTracking());
+		//MinecraftForge.EVENT_BUS.register(new PlayerTracking());
 	}
 
 	@SubscribeEvent
@@ -67,7 +69,8 @@ public class ClientProxy extends Proxy
 	@SubscribeEvent
 	public void onRenderGameOverlayEvent(RenderGameOverlayEvent.Post event)
 	{
-		Overlay overlay = new Overlay(Minecraft.getMinecraft());
+		if (overlay == null)
+			overlay = new Overlay(Minecraft.getMinecraft());
 		overlay.onRenderExperienceBar(event);
 		//Log.msg("%s", event.type.toString());
 	}
